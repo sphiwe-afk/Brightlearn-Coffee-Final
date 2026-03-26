@@ -1,0 +1,39 @@
+--1.Adding Dayname, Monthname, Dayofmonth and Revenue columns
+
+SELECT transaction_id,
+      transaction_date,
+      Dayname(transaction_date) AS Day_name,
+      Monthname(transaction_date) AS Month_name,
+      Dayofmonth(transaction_date) AS Day_of_month,
+      transaction_time,
+      transaction_qty,
+      store_id,
+      store_location,
+      product_id,
+      product_category,
+      product_type,
+      product_detail,
+      unit_price,
+      (transaction_qty*unit_price) AS revenue_per_day,
+---2.Adding Weekday/Weekend column
+CASE 
+    WHEN Dayname(transaction_date) IN ('Sat','Sun') Then 'Weekend'
+    ELSE 'Weekday'
+    End AS Day_class,     
+--3.Add time categories
+CASE 
+     WHEN date_format(transaction_time, 'HH:mm:ss') BETWEEN '05:00:00' AND '08:59:59' THEN 'Early morning'
+     WHEN date_format(transaction_time, 'HH:mm:ss') BETWEEN '09:00:00' AND '11:59:59' THEN 'Mid morning'
+     WHEN date_format(transaction_time, 'HH:mm:ss') BETWEEN '12:00:00' AND '15:59:59' THEN 'Afternoon'
+     WHEN date_format(transaction_time, 'HH:mm:ss') BETWEEN '16:00:00' AND '18:00:00' THEN 'Early evening' 
+     ELSE 'Late evening'
+     END AS Time_category,
+--4. Add Spenders category column
+CASE 
+    WHEN (transaction_qty*unit_price) <=50 THEN 'Low spender'
+    WHEN (transaction_qty*unit_price) BETWEEN 51 AND 200 THEN 'Medium spender'
+    WHEN (transaction_qty*unit_price) BETWEEN 201 AND 300 THEN 'High spender'
+    ELSE 'Exorbitant spender'
+    END AS Spenders_category
+
+FROM `workspace`.`default`.`bright_coffee_shop_analysis_case_study_1`;
